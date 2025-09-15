@@ -1,4 +1,4 @@
-# API de Messagerie en Temps Réel -
+# API de Messagerie en Temps Réel 
 
 Une API FastAPI complète pour un système de messagerie en temps réel avec WebSocket et authentification JWT.
 
