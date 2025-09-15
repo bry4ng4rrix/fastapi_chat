@@ -8,7 +8,6 @@ Une API FastAPI complète pour un système de messagerie en temps réel avec Web
 - 🔐 **Authentification JWT** sécurisée
 - 👥 **Gestion des utilisateurs** avec CRUD complet
 - 📨 **Conversations privées** entre utilisateurs
-- ✏️ **Modification et suppression** de messages
 - 🟢 **Statut en ligne** des utilisateurs connectés
 - 🚫 **Blacklist de tokens** pour la déconnexion sécurisée
 
