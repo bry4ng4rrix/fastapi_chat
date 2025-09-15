@@ -31,7 +31,7 @@ class User(SQLModel, table=True):
 class Message(SQLModel, table=True):
     id: Optional[int]           # Clé primaire
     content: str                # Contenu du message
-    timestamp: datetime         # Horodatage (UTC)
+    date_create: datetime       # Horodatage (UTC)
     sender_id: int              # ID de l'expéditeur
     receiver_id: int            # ID du destinataire
     sender: Optional[User]      # Relation vers l'expéditeur
