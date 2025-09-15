@@ -7,7 +7,6 @@ engine = create_engine(DATABASE_URL, echo=True)
 def create_db_and_tables():
     configure_mappers()
     SQLModel.metadata.create_all(engine)
-    print("Database and tables created")
 
 def get_session():
     with Session(engine) as session:

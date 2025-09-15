@@ -48,3 +48,11 @@ class UserRead(SQLModel):
     id: int
     name: str
     email: str
+
+class TokenBlacklist(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    token: str = Field(index=True, unique=True)
+    blacklisted_at: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Config:
+        table_name = "token_blacklist"
