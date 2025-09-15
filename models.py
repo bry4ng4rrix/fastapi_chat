@@ -56,3 +56,4 @@ class TokenBlacklist(SQLModel, table=True):
     
     class Config:
         table_name = "token_blacklist"
+

@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 from database import get_session
 from models import User, UserCreate, UserRead, TokenBlacklist
 
-router = APIRouter(tags=["auth"])
+router = APIRouter(tags=["Authentication"])
 
 SECRET_KEY = "bryangarrix"  # Change to a secure key in production
 ALGORITHM = "HS256"
@@ -149,10 +149,7 @@ async def logout(token: str = Depends(oauth2_scheme), session: Session = Depends
             detail="Invalid token"
         )
 
-@router.get("/me", response_model=UserRead)
-async def read_users_me(current_user: User = Depends(get_current_user)):
-    """Récupérer les informations de l'utilisateur connecté"""
-    return current_user
+
 
 @router.post("/refresh")
 async def refresh_token(current_user: User = Depends(get_current_user)):

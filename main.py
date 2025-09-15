@@ -7,8 +7,8 @@ from routers.auth import router as auth_router
 app = FastAPI()
 
 app.include_router(auth_router, prefix="/auth")
-app.include_router(users_router, tags=["users"])
-app.include_router(messages_router, prefix="/message", tags=["messages"])
+app.include_router(users_router, prefix="/user")
+app.include_router(messages_router, prefix="/message")
 ## create database
 @app.on_event("startup")
 def on_startup():

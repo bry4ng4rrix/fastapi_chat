@@ -7,9 +7,7 @@ from routers.auth import get_current_user, get_user_from_token
 import json
 from datetime import datetime
 
-router = APIRouter(
-    tags=["messages"]
-)
+router = APIRouter(tags=["Messages"])
 
 # Gestionnaire de connexions WebSocket
 class ConnectionManager:

@@ -131,7 +131,7 @@ class ConnectionManager:
 # Instance globale du gestionnaire de connexions
 manager = ConnectionManager()
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(tags=["Utilisateurs"])
 
 # Routes WebSocket
 @router.websocket("/ws/{token}")
@@ -225,6 +225,22 @@ def read_users(session: Session = Depends(get_session), current_user: User = Dep
 @router.get("/me", response_model=UserRead)
 def read_current_user(current_user: User = Depends(get_current_user)):
     return current_user
+
+@router.put("/me", response_model=UserRead)
+def update_current_user(user: UserCreate, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
+    db_user = session.get(User, current_user.id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Utilisateur introuvable")
+    
+    user_data = user.dict(exclude_unset=True)
+    for key, value in user_data.items():
+        setattr(db_user, key, value)
+    
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+    return db_user
+
 
 @router.get("/{user_id}", response_model=UserRead)
 def read_user(user_id: int, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
