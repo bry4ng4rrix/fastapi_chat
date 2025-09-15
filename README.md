@@ -250,29 +250,3 @@ async function getConversation(userId) {
     return response.json();
 }
 ```
-
-## 🚨 Gestion des erreurs
-
-### Codes d'erreur WebSocket
-- **4000** : Erreur serveur générale
-- **4001** : Token JWT invalide
-
-### Erreurs HTTP
-- **404** : Utilisateur ou message non trouvé
-- **403** : Action non autorisée (modification/suppression)
-- **401** : Token manquant ou invalide
-
-## 🔒 Sécurité
-
-- Authentification JWT obligatoire
-- Validation des permissions (propriétaire pour modification/suppression)
-- Vérification de l'existence des destinataires
-- Nettoyage automatique des connexions fermées
-- Blacklist des tokens pour déconnexion sécurisée
-
-## 📊 Performances
-
-- Connexions WebSocket persistantes
-- Diffusion optimisée aux participants uniquement
-- Index sur les tokens blacklistés
-- Nettoyage automatique des connexions mortes
