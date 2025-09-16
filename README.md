@@ -427,4 +427,8 @@ Pour obtenir de l'aide :
 
 1. Consultez la documentation intégrée
 2. Vérifiez les issues GitHub existantes
+<<<<<<< HEAD
 3. Créez une nouvelle issue si nécessaire
+=======
+3. Créez une nouvelle issue si nécessaire
+>>>>>>> a15f7b9 (w)

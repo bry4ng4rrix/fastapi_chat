@@ -126,6 +126,11 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+
+@router.get("/me", response_model=UserRead)
+async def read_current_user(current_user: User = Depends(get_current_user)):
+    return current_user
+
 @router.post("/logout")
 async def logout(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
     """Déconnexion - ajouter le token à la blacklist"""

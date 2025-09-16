@@ -222,9 +222,7 @@ def read_users(session: Session = Depends(get_session), current_user: User = Dep
     users = session.exec(select(User)).all()
     return users
 
-@router.get("/me", response_model=UserRead)
-def read_current_user(current_user: User = Depends(get_current_user)):
-    return current_user
+
 
 @router.put("/me", response_model=UserRead)
 def update_current_user(user: UserCreate, session: Session = Depends(get_session), current_user: User = Depends(get_current_user)):
