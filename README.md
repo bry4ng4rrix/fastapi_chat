@@ -66,7 +66,6 @@ Ouvrez votre navigateur et allez à :
 
 - **Documentation API** : http://localhost:8000/docs
 - **API Alternative** : http://localhost:8000/redoc
-- **Health Check** : http://localhost:8000/auth/health
 
 ## 🏗️ Architecture
 
