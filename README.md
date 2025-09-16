@@ -47,7 +47,6 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-
 ### 4. Lancement de l'Application
 
 #### Développement
@@ -60,7 +59,7 @@ uvicorn main:app --reload --host 0.0.0.0 --port 8000
 uvicorn main:app --host 0.0.0.0 --port 8000 --workers 4
 ```
 
-### 9. Vérification de l'Installation
+### 5. Vérification de l'Installation
 
 Ouvrez votre navigateur et allez à :
 
@@ -101,111 +100,70 @@ class TokenBlacklist(SQLModel, table=True):
     blacklisted_at: datetime    # Date de blacklistage
 ```
 
-## 🚀 Endpoints API
+## 🚀 API Endpoints
 
-### Authentification
+### 🔐 Authentification (`/auth`)
 
-#### `POST /auth/register`
-Inscription d'un nouvel utilisateur
-```json
-{
-  "name": "Jean Dupont",
-  "email": "jean@example.com",
-  "password": "motdepasse123"
-}
-```
+| Méthode | Endpoint | Description | Auth | Body | Réponse |
+|---------|----------|-------------|------|------|---------|
+| `POST` | `/auth/register` | Créer un compte utilisateur | ❌ | `{"name": "Jean", "email": "jean@ex.com", "password": "pass123"}` | `UserRead` |
+| `POST` | `/auth/token` | Connexion et récupération token JWT | ❌ | Form: `username=email&password=pass` | `{"access_token": "jwt...", "token_type": "bearer"}` |
+| `GET` | `/auth/me` | Informations utilisateur connecté | ✅ | - | `UserRead` |
+| `POST` | `/auth/logout` | Déconnexion avec blacklist token | ✅ | - | `{"message": "Successfully logged out"}` |
+| `POST` | `/auth/refresh` | Renouveler le token JWT | ✅ | - | `{"access_token": "jwt...", "token_type": "bearer"}` |
 
-#### `POST /auth/token`
-Connexion et récupération du token JWT
-```form-data
-username=jean@example.com
-password=motdepasse123
-```
+### 👥 Gestion Utilisateurs (`/user`)
 
-#### `POST /auth/logout`
-Déconnexion et blacklistage du token
-```http
-Authorization: Bearer <token>
-```
+| Méthode | Endpoint | Description | Auth | Body | Réponse |
+|---------|----------|-------------|------|------|---------|
+| `POST` | `/user/` | Créer un utilisateur (Admin) | ✅ | `{"name": "Marie", "email": "marie@ex.com", "password": "pass456"}` | `UserRead` |
+| `GET` | `/user/` | Liste tous les utilisateurs | ✅ | - | `List[UserRead]` |
+| `GET` | `/user/{user_id}` | Détails d'un utilisateur | ✅ | - | `UserRead` |
+| `PUT` | `/user/me` | Modifier son profil | ✅ | `{"name": "Nouveau nom", "email": "nouveau@ex.com"}` | `UserRead` |
+| `GET` | `/user/active/list` | Utilisateurs en ligne | ✅ | - | `{"active_users": [1,3,5], "count": 3, "timestamp": "..."}` |
+| `GET` | `/user/active/status/{user_id}` | Statut d'activité utilisateur | ✅ | - | `{"user_id": 3, "is_active": true, "timestamp": "..."}` |
+| `POST` | `/user/broadcast` | Diffusion message à tous | ✅ | `{"message": "Annonce importante"}` | `{"status": "Message diffusé", "recipients": 12}` |
 
-#### `GET /auth/me`
-Informations de l'utilisateur connecté
-```http
-Authorization: Bearer <token>
-```
+### 💬 Messages (`/message`)
 
-### Utilisateurs
+| Méthode | Endpoint | Description | Auth | Body | Réponse |
+|---------|----------|-------------|------|------|---------|
+| `POST` | `/message/` | Envoyer un message privé | ✅ | Form: `receiver_id=2&content=Bonjour` | `Message` |
+| `GET` | `/message/` | Tous mes messages | ✅ | - | `List[Message]` |
+| `GET` | `/message/conversation/{user_id}` | Conversation avec utilisateur | ✅ | - | `List[Message]` |
+| `PUT` | `/message/{message_id}` | Modifier un message | ✅ | Form: `content=Message modifié` | `Message` |
+| `DELETE` | `/message/{message_id}` | Supprimer un message | ✅ | - | `{"message": "Message supprimé avec succès"}` |
+| `GET` | `/message/online-users` | Utilisateurs connectés chat | ✅ | - | `List[int]` |
 
-#### `GET /users/`
-Liste de tous les utilisateurs
-```http
-Authorization: Bearer <token>
-```
+### 🔌 WebSocket Endpoints
 
-#### `GET /users/me`
-Profil de l'utilisateur connecté
-```http
-Authorization: Bearer <token>
-```
+| Type | Endpoint | Description | Auth | Protocole |
+|------|----------|-------------|------|-----------|
+| WS | `/user/ws/{token}` | Connexion activité utilisateurs | ✅ | WebSocket |
+| WS | `/message/ws?token={token}` | Connexion messagerie temps réel | ✅ | WebSocket |
 
-#### `GET /users/active/list`
-Liste des utilisateurs actuellement en ligne
-```http
-Authorization: Bearer <token>
-```
+### 📊 Codes de Réponse HTTP
 
-#### `GET /users/active/status/{user_id}`
-Vérifier si un utilisateur est en ligne
-```http
-Authorization: Bearer <token>
-```
-
-### Messages HTTP
-
-#### `POST /messages/`
-Envoie un nouveau message
-```json
-{
-  "receiver_id": 2,
-  "content": "Bonjour, comment allez-vous ?"
-}
-```
-
-#### `GET /messages/`
-Récupère tous les messages de l'utilisateur connecté
-
-#### `GET /messages/conversation/{user_id}`
-Récupère la conversation avec un utilisateur spécifique
-
-#### `PUT /messages/{message_id}`
-Modifie le contenu d'un message (propriétaire uniquement)
-```json
-{
-  "content": "Message modifié"
-}
-```
-
-#### `DELETE /messages/{message_id}`
-Supprime un message (propriétaire uniquement)
-
-#### `POST /users/broadcast`
-Diffuse un message à tous les utilisateurs connectés
-```json
-{
-  "message": "Annonce importante à tous les utilisateurs"
-}
-```
+| Code | Signification | Cas d'usage |
+|------|---------------|-------------|
+| `200` | Succès | Opération réussie |
+| `201` | Créé | Ressource créée avec succès |
+| `400` | Requête invalide | Email déjà existant, données manquantes |
+| `401` | Non autorisé | Token invalide/expiré, mauvais identifiants |
+| `403` | Interdit | Pas d'autorisation pour cette action |
+| `404` | Non trouvé | Utilisateur/Message introuvable |
+| `422` | Données invalides | Format JSON incorrect |
 
 ## 🔌 WebSocket
 
-### Connexion Utilisateurs (Activité)
+### Connexion Activité Utilisateurs
 ```
-ws://localhost:8000/users/ws/<jwt_token>
+ws://localhost:8000/user/ws/<jwt_token>
 ```
 
-### Connexion Messages (Chat)
+### Connexion Messages Chat
 ```
-ws://localhost:8000/messages/ws?token=<jwt_token>
+ws://localhost:8000/message/ws?token=<jwt_token>
 ```
 
 ### Messages WebSocket
@@ -284,7 +242,6 @@ La classe `ConnectionManager` gère les connexions WebSocket :
 - **Gestion des erreurs** et reconnexions
 - **Suivi d'activité** en temps réel
 
-
 ## 📝 Exemples d'Utilisation
 
 ### Client JavaScript WebSocket Complet
@@ -300,7 +257,7 @@ class GarrixClient {
 
     // Connexion pour le suivi d'activité
     connectActivity() {
-        this.activityWs = new WebSocket(`${this.apiUrl}/users/ws/${this.token}`);
+        this.activityWs = new WebSocket(`${this.apiUrl}/user/ws/${this.token}`);
         
         this.activityWs.onopen = () => {
             console.log('🟢 Connexion activité établie');
@@ -315,7 +272,7 @@ class GarrixClient {
 
     // Connexion pour les messages
     connectMessages() {
-        this.messageWs = new WebSocket(`${this.apiUrl}/messages/ws?token=${this.token}`);
+        this.messageWs = new WebSocket(`${this.apiUrl}/message/ws?token=${this.token}`);
         
         this.messageWs.onopen = () => {
             console.log('💬 Connexion messages établie');
@@ -418,7 +375,7 @@ class GarrixAPI {
     }
 
     async getConversation(userId) {
-        const response = await fetch(`${this.baseUrl}/messages/conversation/${userId}`, {
+        const response = await fetch(`${this.baseUrl}/message/conversation/${userId}`, {
             headers: { 'Authorization': `Bearer ${this.token}` }
         });
         return response.json();
@@ -429,7 +386,7 @@ class GarrixAPI {
         formData.append('receiver_id', receiverId);
         formData.append('content', content);
         
-        const response = await fetch(`${this.baseUrl}/messages/`, {
+        const response = await fetch(`${this.baseUrl}/message/`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${this.token}` },
             body: formData
@@ -438,7 +395,7 @@ class GarrixAPI {
     }
 
     async getActiveUsers() {
-        const response = await fetch(`${this.baseUrl}/users/active/list`, {
+        const response = await fetch(`${this.baseUrl}/user/active/list`, {
             headers: { 'Authorization': `Bearer ${this.token}` }
         });
         return response.json();
@@ -464,7 +421,6 @@ const api = new GarrixAPI('http://localhost:8000');
 4. Push vers la branche (`git push origin feature/nouvelle-fonctionnalité`)
 5. Créez une Pull Request
 
-
 ## 🆘 Support
 
 Pour obtenir de l'aide :
@@ -472,5 +428,3 @@ Pour obtenir de l'aide :
 1. Consultez la documentation intégrée
 2. Vérifiez les issues GitHub existantes
 3. Créez une nouvelle issue si nécessaire
-
----
